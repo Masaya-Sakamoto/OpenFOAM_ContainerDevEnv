@@ -13,6 +13,14 @@ This setup aims to create a self-contained environment using a `Dockerfile` and 
 
 ## INDEX
 
+1. [Prerequisites](#1-prerequisites)
+2. [Project Setup](#2-project-setup)
+3. [Create `Dockerfile`](#3-create-dockerfile)
+4. [Create `devcontainer.json`](#4-create-devcontainerjson)
+5. [Build and Launch the Dev Container](#5-build-and-launch-the-dev-container)
+6. [Verify the Environment](#6-verify-the-environment)
+7. [Development Workflow](#7-development-workflow)
+8. [Troubleshooting Notes](#troubleshooting-notes)
 
 ## 1. Prerequisites
 
