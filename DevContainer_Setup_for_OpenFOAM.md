@@ -1,32 +1,35 @@
 ---
 title: "Dev Container Setup for OpenFOAM (Source Build with Intel Compilers)"
-author: "OpenFOAM Development Team"
+author: "Masaya-Sakamoto"
 date: "2025-04-25"
 abstract: |
     This document provides a comprehensive guide to setting up a development container for OpenFOAM using Intel compilers. It includes detailed instructions for creating a Docker-based environment with a `Dockerfile` and `devcontainer.json`, ensuring a repeatable and self-contained setup. The guide covers prerequisites, environment configuration, source compilation, and troubleshooting tips to streamline the OpenFOAM development workflow.
 keywords: ["OpenFOAM", "Dev Containers", "Intel Compilers", "Docker", "Source Build", "Development Environment", "HPC", "Computational Fluid Dynamics"]
 ---
 
-### Dev Container Setup for OpenFOAM (Source Build with Intel Compilers)
+# Dev Container Setup for OpenFOAM (Source Build with Intel Compilers)
 
 This setup aims to create a self-contained environment using a `Dockerfile` and `devcontainer.json`.
 
-**1. Prerequisites:**
+## INDEX
 
-* Visual Studio Code installed.
-* Docker Desktop (Windows/macOS) or Docker Engine (Linux) installed and **running**.
-* `Dev Containers` extension installed in VS Code.
 
-**2. Project Setup:**
+## 1. Prerequisites
 
-* Create a new folder for your project (or use an existing one).
-* Open this folder in VS Code.
-* Create a subfolder named `.devcontainer` inside your project folder.
+- Visual Studio Code installed.
+- Docker Desktop (Windows/macOS) or Docker Engine (Linux) installed and **running**.
+- `Dev Containers` extension installed in VS Code.
 
-**3. Create `Dockerfile`:**
+## 2. Project Setup
 
-* Inside the `.devcontainer` folder, create a file named `Dockerfile`.
-* Populate it with the following content, adapting paths and versions as needed:
+- Create a new folder for your project (or use an existing one).
+- Open this folder in VS Code.
+- Create a subfolder named `.devcontainer` inside your project folder.
+
+## 3. Create `Dockerfile`
+
+- Inside the `.devcontainer` folder, create a file named `Dockerfile`.
+- Populate it with the following content, adapting paths and versions as needed:
 
 ```dockerfile
 # Start from the Ubuntu base specified in the document
@@ -109,13 +112,13 @@ RUN mkdir -p $FOAM_INSTALL && \
     # Clone desired version (Example: OpenFOAM.org development branch)
     git clone --depth 1 https://develop.openfoam.com/Development/openfoam.git $FOAM_INSTALL/OpenFOAM-dev && \
     git clone --depth 1 https://develop.openfoam.com/Development/ThirdParty-common.git $FOAM_INSTALL/ThirdParty-dev
-    # Add lines here to checkout specific tags/branches if needed [cite: 23, 24]
+    # Add lines here to checkout specific tags/branches if needed
 
 WORKDIR $FOAM_INSTALL/OpenFOAM-dev
 
 # === Phase 3: Configure Build Environment (Adapted from) ===
 # Create prefs.sh to specify Intel Compilers
-# ** CRITICAL: Verify WM_COMPILER value (e.g., intelicx) for your OpenFOAM version/Intel compilers [cite: 34, 35] **
+# ** CRITICAL: Verify WM_COMPILER value (e.g., intelicx) for your OpenFOAM version/Intel compilers **
 RUN echo '#!/bin/bash' > $FOAM_INSTALL/OpenFOAM-dev/prefs.sh && \
     echo '# Compiler Selection (Verify value!)' >> $FOAM_INSTALL/OpenFOAM-dev/prefs.sh && \
     echo 'export WM_COMPILER=intelicx' >> $FOAM_INSTALL/OpenFOAM-dev/prefs.sh && \
@@ -160,10 +163,10 @@ RUN mkdir -p /home/$USERNAME/OpenFOAM/OpenFOAM-dev/run
 USER root
 ```
 
-**4. Create `devcontainer.json`:**
+## 4. Create `devcontainer.json`
 
-* Inside the `.devcontainer` folder, create a file named `devcontainer.json`.
-* Populate it with the following content:
+- Inside the `.devcontainer` folder, create a file named `devcontainer.json`.
+- Populate it with the following content:
 
 ```json
 {
@@ -205,58 +208,60 @@ USER root
     //  "source=/path/on/host,target=/path/in/container,type=bind,consistency=cached"
     // ],
 
-    // Increase resources if needed, compilation is resource intensive [cite: 58]
+    // Increase resources if needed, compilation is resource intensive
     "runArgs": [
         "--shm-size=2g" // Example: Increase shared memory
         // Add other Docker run arguments as necessary
     ]
-
 }
 ```
 
-**5. Build and Launch the Dev Container:**
+## 5. Build and Launch the Dev Container
 
-* Ensure Docker Desktop/Engine is running.
-* Open the command palette in VS Code (`Ctrl+Shift+P` or `Cmd+Shift+P`).
-* Run the command: `Dev Containers: Reopen in Container`.
-* VS Code will build the Docker image based on your `Dockerfile`. This will take a **very long time** (potentially hours) due to the compilation steps[cite: 45]. Monitor the build log shown in the VS Code terminal.
-* Once the build is successful, VS Code will connect to the container.
+- Ensure Docker Desktop/Engine is running.
+- Open the command palette in VS Code (`Ctrl+Shift+P` or `Cmd+Shift+P`).
+- Run the command: `Dev Containers: Reopen in Container`.
+- VS Code will build the Docker image based on your `Dockerfile`. This will take a **very long time** (potentially hours) due to the compilation steps. Monitor the build log shown in the VS Code terminal.
+- Once the build is successful, VS Code will connect to the container.
 
-**6. Verify the Environment:**
+## 6. Verify the Environment
 
-* Open a new terminal inside VS Code (`Terminal` > `New Terminal`).
-* The terminal should automatically source the Intel and OpenFOAM environments via the `.bashrc` setup[cite: 47, 49].
-* Verify the environment[cite: 38, 50]:
-    ```bash
-    echo "Compiler: $WM_COMPILER" # Should show 'intelicx' or your setting [cite: 34]
-    echo "MPI Lib:  $WM_MPLIB"   # Should show 'INTELMPI' [cite: 36]
-    which icpx                  # Should point to Intel compiler
-    which mpirun                # Should point to Intel MPI
-    which blockMesh simpleFoam  # Should find OpenFOAM utilities
-    foamInstallationTest        # Run built-in test
-    ```
-* Try running a tutorial case[cite: 50, 51]:
-    ```bash
-    cd $FOAM_RUN
-    cp -r $FOAM_TUTORIALS/incompressible/icoFoam/cavity/cavity .
-    cd cavity
-    blockMesh
-    icoFoam
-    # Check logs for errors
-    ```
+- Open a new terminal inside VS Code.
+The terminal should automatically source the Intel and OpenFOAM environments via the `.bashrc` setup.
+- Verify the environment:
 
-**7. Development Workflow:**
+```bash
+echo "Compiler: $WM_COMPILER" # Should show 'intelicx' or your setting
+echo "MPI Lib:  $WM_MPLIB"   # Should show 'INTELMPI'
+which icpx                  # Should point to Intel compiler
+which mpirun                # Should point to Intel MPI
+which blockMesh simpleFoam  # Should find OpenFOAM utilities
+foamInstallationTest        # Run built-in test
+```
 
-* You can now edit code within VS Code, and it will operate directly on the files inside the container.
-* Use the integrated terminal for all compilation, execution, and Git commands related to your OpenFOAM work.
-* If you modify the `devcontainer.json` or `Dockerfile`, rebuild the container using `Dev Containers: Rebuild Container` from the command palette.
+- Try running a tutorial case:
 
-**Troubleshooting Notes (Adapted from):**
+```bash
+cd $FOAM_RUN
+cp -r $FOAM_TUTORIALS/incompressible/icoFoam/cavity/cavity .
+cd cavity
+blockMesh
+icoFoam
+# Check logs for errors
+```
 
-* **Build Failures:** Carefully examine the build logs in the VS Code terminal for errors during `apt-get`, Intel oneAPI setup, or `Allwmake`[cite: 51]. Missing dependencies [cite: 55] or incorrect compiler/MPI settings [cite: 53, 54] are common causes.
-* **Intel oneAPI Installer:** The automated installation [cite: 16] is the most likely point of failure. Check Intel's documentation for non-interactive installation options or consider alternative installation methods.
-* **Environment Sourcing:** Ensure the `setvars.sh` and OpenFOAM `bashrc` are sourced correctly and in the right order [cite: 47, 57] within the `Dockerfile` RUN commands and the final `.bashrc`.
-* **Resource Limits:** OpenFOAM compilation requires significant RAM and CPU[cite: 58]. Ensure Docker has sufficient resources allocated. Adjust `runArgs` in `devcontainer.json` if needed.
-* **Clean Build:** If you encounter persistent errors after changes, use `Dev Containers: Rebuild Container without Cache` or add `./Allwclean` steps [cite: 57] back into the `Dockerfile` before the `Allwmake` commands (commented out in the example above).
+## 7. Development Workflow
 
-This comprehensive setup provides a repeatable OpenFOAM development environment based on your source build requirements using Intel compilers, leveraging the power of Dev Containers. Remember to adapt the specifics (versions, compiler flags, dependencies) according to the official documentation for the OpenFOAM version you choose[cite: 2, 9, 55].
+- You can now edit code within VS Code, and it will operate directly on the files inside the container.
+- Use the integrated terminal for all compilation, execution, and Git commands related to your OpenFOAM work.
+- If you modify the `devcontainer.json` or `Dockerfile`, rebuild the container using `Dev Containers: Rebuild Container` from the command palette.
+
+## Troubleshooting Notes
+
+- **Build Failures:** Carefully examine the build logs in the VS Code terminal for errors during `apt-get`, Intel oneAPI setup, or `Allwmake`. Missing dependencies or incorrect compiler/MPI settings are common causes.
+- **Intel oneAPI Installer:** The automated installation is the most likely point of failure. Check Intel's documentation for non-interactive installation options or consider alternative installation methods.
+- **Environment Sourcing:** Ensure the `setvars.sh` and OpenFOAM `bashrc` are sourced correctly and in the right order within the `Dockerfile` RUN commands and the final `.bashrc`.
+- **Resource Limits:** OpenFOAM compilation requires significant RAM and CPU. Ensure Docker has sufficient resources allocated. Adjust `runArgs` in `devcontainer.json` if needed.
+- **Clean Build:** If you encounter persistent errors after changes, use `Dev Containers: Rebuild Container without Cache` or add `./Allwclean` steps back into the `Dockerfile` before the `Allwmake` commands (commented out in the example above).
+
+This comprehensive setup provides a repeatable OpenFOAM development environment based on your source build requirements using Intel compilers, leveraging the power of Dev Containers. Remember to adapt the specifics (versions, compiler flags, dependencies) according to the official documentation for the OpenFOAM version you choose.
