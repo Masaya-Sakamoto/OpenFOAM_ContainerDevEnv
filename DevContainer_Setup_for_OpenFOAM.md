@@ -176,7 +176,7 @@ USER root
 - Inside the `.devcontainer` folder, create a file named `devcontainer.json`.
 - Populate it with the following content:
 
-```json
+```jsonc
 {
     "name": "OpenFOAM (Source Build - Intel Compilers)",
     "build": {
