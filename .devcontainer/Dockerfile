@@ -73,14 +73,15 @@ USER $USERNAME
 WORKDIR /home/$USERNAME
 
 # Set up OpenFOAM directory
+ARG MY_OPENFOAM_VERSION="v2406"
 ENV FOAM_INSTALL=/home/$USERNAME/OpenFOAM
 RUN mkdir -p $FOAM_INSTALL && \
     # Clone desired version (Example: OpenFOAM.org development branch)
-    git clone --depth 1 https://develop.openfoam.com/Development/openfoam.git $FOAM_INSTALL/OpenFOAM-dev && \
-    git clone --depth 1 https://develop.openfoam.com/Development/ThirdParty-common.git $FOAM_INSTALL/ThirdParty-dev
+    wget no-check-certificate https://cyfuture.dl.sourceforge.net/project/openfoam/${MY_OPENFOAM_VERSION}/OpenFOAM-${MY_OPENFOAM_VERSION}.tgz && \
+    wget no-check-certificate https://cyfuture.dl.sourceforge.net/project/openfoam/${MY_OPENFOAM_VERSION}/ThirdParty-${MY_OPENFOAM_VERSION}.tgz
     # Add lines here to checkout specific tags/branches if needed
 
-WORKDIR $FOAM_INSTALL/OpenFOAM-dev
+WORKDIR $FOAM_INSTALL/OpenFOAM-${MY_OPENFOAM_VERSION}
 
 # === Phase 3: Configure Build Environment (Adapted from) ===
 # Create prefs.sh to specify Intel Compilers
